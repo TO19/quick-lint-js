@@ -14,7 +14,11 @@
       );
       let seriesOptions = {
         "quick-lint-js": {hue: 0.0},
-        "eslint-server": {hue: 60.0, name: "ESLint"},
+        "vscode-eslint-vue": {hue: 40.0, name: "ESLint + Vue plugin"},
+        "vscode-eslint-react": {hue: 50.0, name: "ESLint + React plugin"},
+        "vscode-eslint-airbnb": {hue: 60.0, name: "ESLint + Airbnb rules"},
+        "vscode-eslint-vanilla": {hue: 70.0, name: "ESLint"},
+        "vscode-eslint-typescript": {hue: 80.0, name: "ESLint + TypeScript plugin"},
         RSLint: {hue: 120.0},
         Flow: {hue: 180.0},
         Deno: {hue: 240.0},
@@ -53,6 +57,11 @@
       </p>
       <ul>
         <li>
+          <a href="#incremental-change-wait-express-router-js"
+            >LSP: incremental-change-wait express-router.js</a
+          >
+        </li>
+        <li>
           <a href="#full-change-wait-express-router-js"
             >LSP: full-change-wait express-router.js</a
           >
@@ -61,15 +70,52 @@
         <li><a href="#comments">Comments</a></li>
       </ul>
 
-      <article class="benchmark" id="full-change-wait-express-router-js">
-        <h2>LSP: full-change-wait express-router.js</h2>
+      <article class="benchmark" id="incremental-change-wait-express-router-js">
+        <h2>LSP: incremental-change-wait express-router.js</h2>
         <p>
           This benchmark measures how long an LSP server takes to give
           diagnostics to an editor.
         </p>
         <h3>Results</h3>
         <%-
-        makeBenchmarkHTML(parseBenchmarkLSPJSON("open-wait-close-express-router-js.json",
+        makeBenchmarkHTML(parseBenchmarkLSPJSON("incremental-change-wait-express-router-js.json",
+        seriesOptions)); %>
+        <h3>Setup (untimed)</h3>
+        <ol>
+          <li>Start the LSP server.</li>
+          <li>Wait for initialization to finish.</li>
+          <li>
+            Open one document with contents from
+            <a
+              href="https://github.com/expressjs/express/blob/508936853a6e311099c9985d4c11a4b1b8f6af07/lib/router/index.js"
+              >express-router.js</a
+            >.
+          </li>
+          <li>Wait for diagnostics.</li>
+        </ol>
+
+        <h3>Work (timed)</h3>
+        <p>Repeat the following steps <var>N</var> times:</p>
+        <ol>
+          <li>
+            Change a few characters in the document, sending small deltas in an LSP message.
+          </li>
+          <li>Wait for diagnostics.</li>
+        </ol>
+      </article>
+
+      <article class="benchmark" id="full-change-wait-express-router-js">
+        <h2>LSP: full-change-wait express-router.js</h2>
+        <p>
+          This benchmark measures how long an LSP server takes to give
+          diagnostics to an editor.
+        </p>
+        <p>This benchmark differs from the <a
+          href="#incremental-change-wait-express-router-js">incremental-change-wait
+          benchmark</a> in that the editor gives the new version of the file entirely rather than just the incremental changes. This is for compatibility with linters such as RSLint which do not support incremental changes.</p>
+        <h3>Results</h3>
+        <%-
+        makeBenchmarkHTML(parseBenchmarkLSPJSON("full-change-wait-express-router-js.json",
         seriesOptions)); %>
         <h3>Setup (untimed)</h3>
         <ol>
